@@ -1,22 +1,29 @@
 resource "aws_db_subnet_group" "db_subnet_group" {
-  count = var.use_rds ? 1 : 0
-  name  = "${var.env_name}-db-subnet-group"
+  name       = "${var.env_name}-db-subnet-group"
   subnet_ids = [for s in aws_subnet.private : s.id]
-  tags = merge(local.common_tags, { Name="${var.env_name}-db-subnet-group" })
+
+  tags = merge(local.common_tags, { Name = "${var.env_name}-db-subnet-group" })
 }
 
 resource "aws_db_instance" "mydb" {
-  count = var.use_rds ? 1 : 0
-  identifier = "${var.env_name}-rds"
-  engine = "mysql"
-  engine_version = var.db_engine_version
-  instance_class = var.db_instance_class
-  allocated_storage = var.db_allocated_storage
-  username = var.db_user
-  password = var.db_password
-  skip_final_snapshot = true
-  db_subnet_group_name = aws_db_subnet_group.db_subnet_group[0].name
+  count                  = var.use_rds ? 1 : 0
+  identifier             = "${var.env_name}-rds"
+  engine                 = "mysql"
+  engine_version         = var.db_engine_version
+  instance_class         = var.db_instance_class
+  allocated_storage      = var.db_allocated_storage
+  username               = var.db_user
+  password               = data.aws_ssm_parameter.rds_pass.value
+  skip_final_snapshot    = true
+  db_subnet_group_name   = aws_db_subnet_group.db_subnet_group.name
   vpc_security_group_ids = [aws_security_group.sg.id]
-  publicly_accessible = true
-  tags = merge(local.common_tags, { Name="${var.env_name}-rds" })
+  publicly_accessible    = true
+
+  tags = merge(local.common_tags, { Name = "${var.env_name}-rds" })
+}
+
+data "aws_ssm_parameter" "rds_pass" {
+  count = var.use_rds ? 1 : 0
+  name  = var.rds_ssm_parameter
+  with_decryption = true
 }

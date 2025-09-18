@@ -22,9 +22,7 @@ It includes EC2 instances, VPC, subnets, security groups, IAM roles, and optiona
 terraform-ec2-mysql-rds/
 │── modules/ # Optional: reusable modules
 │── environments/
-│ ├── dev/ # Dev environment
-│ │ └── dev.tfvars
-│ └── prod/ # Prod environment
+│ └── dev.tfvars
 │ └── prod.tfvars
 │── userdata/
 │ └── userdata.sh # EC2 user-data script

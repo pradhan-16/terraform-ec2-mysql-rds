@@ -1,13 +1,17 @@
 resource "aws_iam_role" "ec2_ssm_role" {
   name = "${var.env_name}-ec2-ssm-role"
   assume_role_policy = jsonencode({
-    Version="2012-10-17",
-    Statement=[{ Action="sts:AssumeRole", Principal={Service="ec2.amazonaws.com"}, Effect="Allow" }]
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Principal = { Service = "ec2.amazonaws.com" }
+      Effect = "Allow"
+    }]
   })
 }
 
-resource "aws_iam_role_policy_attachment" "ssm_core" {
-  role = aws_iam_role.ec2_ssm_role.name
+resource "aws_iam_role_policy_attachment" "ssm_attach" {
+  role       = aws_iam_role.ec2_ssm_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
